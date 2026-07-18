@@ -53,7 +53,8 @@
                         @if (auth()->user()->hasRole('admin', 'keuangan'))
                         <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Keuangan</p>
-                            <p class="px-4 py-3 text-sm text-gray-400 italic">Segera hadir</p>
+                            @include('layouts.partials.nav-item', ['route' => 'billing.index', 'icon' => 'file-text', 'label' => 'Generate Tagihan'])
+                            @include('layouts.partials.nav-item', ['route' => 'finance.index', 'icon' => 'credit-card', 'label' => 'Pusat Pembayaran'])
                         </div>
                         @endif
 

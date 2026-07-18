@@ -293,7 +293,7 @@
                                 @forelse ($activeStudentsForPromotion as $student)
                                     <tr class="hover:bg-gray-50 transition-colors">
                                         <td class="px-4 py-3 w-10 text-center">
-                                            <input type="checkbox" wire:model="selectedForPromotion" value="{{ $student->id }}" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                                            <input type="checkbox" wire:model.live="selectedForPromotion" value="{{ $student->id }}" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="font-bold text-gray-900">{{ $student->nama_lengkap }}</div>

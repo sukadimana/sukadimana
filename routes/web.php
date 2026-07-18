@@ -4,7 +4,9 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\ResetPassword;
+use App\Livewire\Billing\Index as BillingIndex;
 use App\Livewire\Dashboard\Index as DashboardIndex;
+use App\Livewire\Finance\Index as FinanceIndex;
 use App\Livewire\KategoriBeasiswa\Index as KategoriBeasiswaIndex;
 use App\Livewire\Khs\Cetak as KhsCetak;
 use App\Livewire\Mahasiswa\Index as MahasiswaIndex;
@@ -38,6 +40,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/mata-kuliah', MataKuliahIndex::class)->name('mata-kuliah.index');
         Route::get('/nilai', NilaiIndex::class)->name('nilai.index');
         Route::get('/khs/cetak', KhsCetak::class)->name('khs.cetak');
+    });
+
+    Route::middleware('role:admin,keuangan')->group(function () {
+        Route::get('/billing', BillingIndex::class)->name('billing.index');
+        Route::get('/finance', FinanceIndex::class)->name('finance.index');
     });
 
     Route::middleware('role:admin')->group(function () {
