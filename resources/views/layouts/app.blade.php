@@ -41,6 +41,15 @@
                     </div>
 
                     @auth
+                        @if (auth()->user()->hasRole('admin', 'akademik'))
+                        <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Akademik & KHS</p>
+                            @include('layouts.partials.nav-item', ['route' => 'mata-kuliah.index', 'icon' => 'book-open', 'label' => 'Manajemen Mata Kuliah'])
+                            @include('layouts.partials.nav-item', ['route' => 'nilai.index', 'icon' => 'file-text', 'label' => 'Input Nilai KHS'])
+                            @include('layouts.partials.nav-item', ['route' => 'khs.cetak', 'icon' => 'printer', 'label' => 'Cetak KHS'])
+                        </div>
+                        @endif
+
                         @if (auth()->user()->hasRole('admin', 'keuangan'))
                         <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Keuangan</p>
@@ -51,7 +60,8 @@
                         @if (auth()->user()->hasRole('admin'))
                         <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Pengaturan</p>
-                            <p class="px-4 py-3 text-sm text-gray-400 italic">Segera hadir</p>
+                            @include('layouts.partials.nav-item', ['route' => 'kategori-beasiswa.index', 'icon' => 'shield', 'label' => 'Kategori Beasiswa'])
+                            <p class="px-4 py-3 text-sm text-gray-400 italic">Lainnya segera hadir</p>
                         </div>
                         @endif
                     @endauth

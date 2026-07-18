@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRole;
+use App\Models\MataKuliah;
 use App\Models\Prodi;
 use App\Models\ProfilKampus;
 use App\Models\TahunAkademik;
@@ -32,7 +33,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@kampus.edu',
         ]);
 
-        Prodi::firstOrCreate(
+        $mpi = Prodi::firstOrCreate(
             ['kode_prodi' => 'MPI'],
             ['nama_prodi' => 'Manajemen Pendidikan Islam', 'jenjang' => 'S1']
         );
@@ -51,5 +52,16 @@ class DatabaseSeeder extends Seeder
             ['nama' => now()->year.'/'.(now()->year + 1).' Ganjil'],
             ['semester_tipe' => 'GANJIL', 'is_active' => true]
         );
+
+        foreach ([
+            ['kode_mk' => 'MPI101', 'nama_mk' => 'Pengantar Ilmu Pendidikan', 'sks' => 3, 'semester' => 1],
+            ['kode_mk' => 'MPI102', 'nama_mk' => 'Bahasa Indonesia', 'sks' => 2, 'semester' => 1],
+            ['kode_mk' => 'MPI201', 'nama_mk' => 'Manajemen Kurikulum', 'sks' => 3, 'semester' => 1],
+        ] as $mk) {
+            MataKuliah::firstOrCreate(
+                ['kode_mk' => $mk['kode_mk']],
+                ['nama_mk' => $mk['nama_mk'], 'sks' => $mk['sks'], 'prodi_id' => $mpi->id, 'semester' => $mk['semester']]
+            );
+        }
     }
 }
