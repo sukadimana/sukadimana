@@ -61,8 +61,9 @@
                         @if (auth()->user()->hasRole('admin'))
                         <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Pengaturan</p>
+                            @include('layouts.partials.nav-item', ['route' => 'campus-profile.index', 'icon' => 'building', 'label' => 'Profil Kampus'])
+                            @include('layouts.partials.nav-item', ['route' => 'user-management.index', 'icon' => 'shield', 'label' => 'Manajemen Pengguna'])
                             @include('layouts.partials.nav-item', ['route' => 'kategori-beasiswa.index', 'icon' => 'shield', 'label' => 'Kategori Beasiswa'])
-                            <p class="px-4 py-3 text-sm text-gray-400 italic">Lainnya segera hadir</p>
                         </div>
                         @endif
                     @endauth

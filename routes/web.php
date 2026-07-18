@@ -5,6 +5,7 @@ use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\ResetPassword;
 use App\Livewire\Billing\Index as BillingIndex;
+use App\Livewire\CampusProfile\Index as CampusProfileIndex;
 use App\Livewire\Dashboard\Index as DashboardIndex;
 use App\Livewire\Finance\Index as FinanceIndex;
 use App\Livewire\KategoriBeasiswa\Index as KategoriBeasiswaIndex;
@@ -15,6 +16,7 @@ use App\Livewire\MataKuliah\Index as MataKuliahIndex;
 use App\Livewire\Nilai\Index as NilaiIndex;
 use App\Livewire\Prodi\Index as ProdiIndex;
 use App\Livewire\TahunAkademik\Index as TahunAkademikIndex;
+use App\Livewire\UserManagement\Index as UserManagementIndex;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -49,5 +51,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/kategori-beasiswa', KategoriBeasiswaIndex::class)->name('kategori-beasiswa.index');
+        Route::get('/campus-profile', CampusProfileIndex::class)->name('campus-profile.index');
+        Route::get('/user-management', UserManagementIndex::class)->name('user-management.index');
     });
 });
