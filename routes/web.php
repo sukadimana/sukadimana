@@ -7,6 +7,10 @@ use App\Livewire\Auth\ResetPassword;
 use App\Livewire\Billing\Index as BillingIndex;
 use App\Livewire\CampusProfile\Index as CampusProfileIndex;
 use App\Livewire\CetakTanggungan\Index as CetakTanggunganIndex;
+use App\Livewire\ContactMessages\Index as ContactMessagesIndex;
+use App\Livewire\Content\Galleries as ContentGalleries;
+use App\Livewire\Content\Pages as ContentPages;
+use App\Livewire\Content\Posts as ContentPosts;
 use App\Livewire\Dashboard\Index as DashboardIndex;
 use App\Livewire\DatabaseManagement\Index as DatabaseManagementIndex;
 use App\Livewire\Finance\Index as FinanceIndex;
@@ -19,6 +23,8 @@ use App\Livewire\MataKuliah\Index as MataKuliahIndex;
 use App\Livewire\Nilai\Index as NilaiIndex;
 use App\Livewire\Prodi\Index as ProdiIndex;
 use App\Livewire\Report\Index as ReportIndex;
+use App\Livewire\Satgas\Reports as SatgasReports;
+use App\Livewire\Satgas\Settings as SatgasSettings;
 use App\Livewire\TahunAkademik\Index as TahunAkademikIndex;
 use App\Livewire\UserManagement\Index as UserManagementIndex;
 use Illuminate\Support\Facades\Route;
@@ -64,5 +70,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/campus-profile', CampusProfileIndex::class)->name('campus-profile.index');
         Route::get('/user-management', UserManagementIndex::class)->name('user-management.index');
         Route::get('/database-management', DatabaseManagementIndex::class)->name('database-management.index');
+
+        Route::get('/website/{channel}/berita', ContentPosts::class)->whereIn('channel', ['kampus', 'satgas_ppk'])->name('content.posts');
+        Route::get('/website/{channel}/halaman', ContentPages::class)->whereIn('channel', ['kampus', 'satgas_ppk'])->name('content.pages');
+        Route::get('/website/{channel}/galeri', ContentGalleries::class)->whereIn('channel', ['kampus', 'satgas_ppk'])->name('content.galleries');
+        Route::get('/website/pesan-kontak', ContactMessagesIndex::class)->name('contact-messages.index');
+
+        Route::get('/satgas-ppk/pengaduan', SatgasReports::class)->name('satgas.reports');
+        Route::get('/satgas-ppk/pengaturan', SatgasSettings::class)->name('satgas.settings');
     });
 });

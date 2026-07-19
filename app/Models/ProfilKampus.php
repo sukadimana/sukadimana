@@ -26,6 +26,11 @@ class ProfilKampus extends Model
         'yudisium_is_open',
         'wa_api_url',
         'wa_api_key',
+        'satgas_nama',
+        'satgas_deskripsi',
+        'satgas_email',
+        'satgas_telepon',
+        'satgas_logo_url',
     ];
 
     protected function casts(): array

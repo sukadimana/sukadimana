@@ -69,6 +69,23 @@
 
                         @if (auth()->user()->hasRole('admin'))
                         <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Website Kampus</p>
+                            @include('layouts.partials.nav-item', ['route' => 'content.posts', 'params' => ['channel' => 'kampus'], 'icon' => 'globe', 'label' => 'Berita & Pengumuman'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.pages', 'params' => ['channel' => 'kampus'], 'icon' => 'file-text', 'label' => 'Halaman Statis'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.galleries', 'params' => ['channel' => 'kampus'], 'icon' => 'image', 'label' => 'Galeri Foto'])
+                            @include('layouts.partials.nav-item', ['route' => 'contact-messages.index', 'icon' => 'mail', 'label' => 'Pesan Kontak'])
+                        </div>
+
+                        <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Satgas PPK</p>
+                            @include('layouts.partials.nav-item', ['route' => 'satgas.reports', 'icon' => 'shield', 'label' => 'Pengaduan Masuk'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.posts', 'params' => ['channel' => 'satgas_ppk'], 'icon' => 'globe', 'label' => 'Berita Satgas PPK'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.pages', 'params' => ['channel' => 'satgas_ppk'], 'icon' => 'file-text', 'label' => 'Halaman Satgas PPK'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.galleries', 'params' => ['channel' => 'satgas_ppk'], 'icon' => 'image', 'label' => 'Galeri Satgas PPK'])
+                            @include('layouts.partials.nav-item', ['route' => 'satgas.settings', 'icon' => 'shield', 'label' => 'Pengaturan Satgas PPK'])
+                        </div>
+
+                        <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Pengaturan</p>
                             @include('layouts.partials.nav-item', ['route' => 'campus-profile.index', 'icon' => 'building', 'label' => 'Profil Kampus'])
                             @include('layouts.partials.nav-item', ['route' => 'user-management.index', 'icon' => 'shield', 'label' => 'Manajemen Pengguna'])
