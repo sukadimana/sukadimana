@@ -145,6 +145,12 @@
         </div>
     @else
         <div class="space-y-6">
+            <div class="flex justify-end">
+                <button wire:click="exportTracerStudy" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition flex items-center gap-2">
+                    <x-icon name="file-text" class="w-4 h-4" />
+                    Export Tracer Study (Excel)
+                </button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($graduates as $s)
                     @php $alumni = $alumniByMahasiswa->get($s->id); @endphp

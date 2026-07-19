@@ -25,14 +25,14 @@ Ini adalah hasil migrasi dari versi awal aplikasi (React/Vite + Firebase mock/lo
 - **Manajemen Prodi** — CRUD program studi.
 - **Manajemen Tahun Akademik** — CRUD + aturan "hanya 1 tahun akademik aktif" + tahun aktif tidak bisa dihapus.
 - **Manajemen Biaya (Master Biaya)** — CRUD katalog tarif per prodi/jenjang/semester.
-- **Manajemen Mahasiswa** — CRUD, filter (nama/NIM/prodi/jenjang/status), proses kenaikan semester massal.
+- **Manajemen Mahasiswa** — CRUD, filter (nama/NIM/prodi/jenjang/status), proses kenaikan semester massal, import massal dari Excel (`.xlsx`) + download template.
 - **Kategori Beasiswa** — CRUD kategori potongan (penuh/nominal/tanpa potongan).
 - **Manajemen Mata Kuliah, Input Nilai KHS, Cetak KHS** — fitur baru (tidak ada di aplikasi React asli, ditambahkan atas permintaan): katalog mata kuliah per prodi/semester, input nilai huruf (A–E) per mahasiswa/mata kuliah/tahun akademik, dan cetak Kartu Hasil Studi (kop surat, IPS, IPK).
-- **Generate Tagihan (Billing)** — penerbitan tagihan per-individu maupun batch dari Master Biaya, dengan aturan asli (mahasiswa harus aktif & terdaftar di tahun akademik aktif, tidak boleh duplikat, potongan otomatis dari kategori beasiswa).
+- **Generate Tagihan (Billing)** — penerbitan tagihan per-individu maupun batch dari Master Biaya, dengan aturan asli (mahasiswa harus aktif & terdaftar di tahun akademik aktif, tidak boleh duplikat, potongan otomatis dari kategori beasiswa), termasuk import tagihan lama dari Excel (`.xlsx`) + download template.
 - **Pusat Pembayaran (Finance)** — pencatatan pembayaran (cicilan/lunas), riwayat pembayaran, cetak kwitansi, hapus tagihan (jika belum ada pembayaran).
 - **Cetak Tanggungan** — surat keterangan tanggungan per mahasiswa dengan watermark LUNAS otomatis.
-- **Laporan Keuangan** — filter multi-kriteria + ekspor **CSV** (bukan `.xlsx` asli — lihat catatan di bawah).
-- **Wisuda & Alumni (Graduation)** — checklist bebas pustaka/keuangan/akademik dengan approval per role, cetak bukti pendaftaran yudisium & surat bebas tanggungan, pengaturan periode pendaftaran, serta tab pelacakan alumni (isi data tracer, kirim WhatsApp manual/API).
+- **Laporan Keuangan** — filter multi-kriteria + ekspor **Excel (`.xlsx`)**.
+- **Wisuda & Alumni (Graduation)** — checklist bebas pustaka/keuangan/akademik dengan approval per role, cetak bukti pendaftaran yudisium & surat bebas tanggungan, pengaturan periode pendaftaran, serta tab pelacakan alumni (isi data tracer, export tracer study ke Excel, kirim WhatsApp manual/API).
 - **Profil Kampus** — identitas institusi + upload logo (dipakai sebagai kop surat KHS/kwitansi/yudisium).
 - **Manajemen Pengguna** — CRUD akun staf lintas role + edit profil admin sendiri.
 - **Manajemen Database** — backup (unduh file `.sqlite`), restore (unggah file `.sqlite`), dan reset seluruh data akademik/keuangan (akun pengguna & profil kampus tetap aman), dengan konfirmasi berlapis mengikuti UX aplikasi asli.
@@ -41,7 +41,7 @@ Semua modul di atas sudah diuji end-to-end dengan browser (login → create/edit
 
 ### Catatan penyesuaian dari versi asli
 
-- **Import/Export Excel** (`.xlsx`) di modul Mahasiswa, Billing (import tagihan lama), dan Laporan tidak diporting apa adanya karena membutuhkan dependency tambahan (`maatwebsite/excel` + ekstensi PHP zip/xml). Laporan Keuangan sudah bisa ekspor **CSV** (dibuka normal di Excel/Google Sheets) tanpa dependency tambahan; import Excel & format `.xlsx` asli bisa ditambahkan di iterasi berikutnya jika benar-benar dibutuhkan.
+- **Import/Export Excel** (`.xlsx`) menggunakan `phpoffice/phpspreadsheet` (bukan `maatwebsite/excel`, agar tidak terikat versi Laravel tertentu) — dipakai di Mahasiswa (import + template), Billing (import tagihan lama + template), Laporan Keuangan (ekspor), dan Tracer Study (ekspor). Semua sudah diuji end-to-end (download template, import, dan buka kembali hasil ekspor untuk verifikasi data).
 - **Manajemen Database**: karena versi Laravel ini memakai database relasional sungguhan (bukan `localStorage`), backup/restore berbasis file JSON pada versi React diganti dengan backup/restore file `.sqlite` utuh (lebih aman secara integritas data & foreign key) — hanya berfungsi saat `DB_CONNECTION=sqlite`. Untuk MySQL di hosting, gunakan `mysqldump`/fitur backup panel hosting.
 - **Landing page publik** dan pengisian Tracer Study mandiri oleh alumni (tanpa login) belum diporting — saat ini pengisian data tracer dilakukan oleh admin/akademik dari dalam sistem.
 

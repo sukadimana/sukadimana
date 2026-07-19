@@ -6,8 +6,11 @@ use App\Enums\StatusTagihan;
 use App\Models\MasterBiaya;
 use App\Models\Prodi;
 use App\Models\Tagihan;
-use Illuminate\Support\Facades\Response;
 use Livewire\Component;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Index extends Component
 {
@@ -38,43 +41,62 @@ class Index extends Component
                 ->orWhereHas('mahasiswa', fn ($qqq) => $qqq->where('semester_saat_ini', $this->filterSemester))));
     }
 
-    public function exportCsv()
+    public function exportXlsx()
     {
         $rows = $this->filteredQuery()->get();
 
-        $filename = 'Laporan_Keuangan_'.now()->format('Ymd_His').'.csv';
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Laporan Tagihan');
 
-        return Response::streamDownload(function () use ($rows) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['NIM', 'Nama Mahasiswa', 'Smt Mhs', 'Jenjang', 'Program Studi', 'Jenis Tagihan', 'Smt Tagihan', 'Total Tagihan', 'Sudah Dibayar', 'Sisa Tunggakan', 'Status']);
+        $headers = ['NIM', 'Nama Mahasiswa', 'Smt Mhs', 'Jenjang', 'Program Studi', 'Jenis Tagihan', 'Smt Tagihan', 'Total Tagihan', 'Sudah Dibayar', 'Sisa Tunggakan', 'Status'];
+        $sheet->fromArray($headers, null, 'A1');
+        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:K1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('DBEAFE');
 
-            $totalTagihan = 0;
-            $totalBayar = 0;
-            $totalSisa = 0;
+        $row = 2;
+        $totalTagihan = 0;
+        $totalBayar = 0;
+        $totalSisa = 0;
 
-            foreach ($rows as $t) {
-                $totalTagihan += $t->total_harus_bayar;
-                $totalBayar += $t->total_sudah_bayar;
-                $totalSisa += $t->sisa_tagihan;
+        foreach ($rows as $t) {
+            $totalTagihan += $t->total_harus_bayar;
+            $totalBayar += $t->total_sudah_bayar;
+            $totalSisa += $t->sisa_tagihan;
 
-                fputcsv($out, [
-                    $t->mahasiswa->nim ?? '-',
-                    $t->mahasiswa->nama_lengkap ?? '-',
-                    $t->mahasiswa->semester_saat_ini ?? '-',
-                    $t->mahasiswa->jenjang ?? '-',
-                    $t->mahasiswa->prodi->nama_prodi ?? '-',
-                    $t->nama_tagihan_snapshot,
-                    $t->semester,
-                    $t->total_harus_bayar,
-                    $t->total_sudah_bayar,
-                    $t->sisa_tagihan,
-                    str_replace('_', ' ', $t->status),
-                ]);
-            }
+            $sheet->fromArray([
+                $t->mahasiswa->nim ?? '-',
+                $t->mahasiswa->nama_lengkap ?? '-',
+                $t->mahasiswa->semester_saat_ini ?? '-',
+                $t->mahasiswa->jenjang ?? '-',
+                $t->mahasiswa->prodi->nama_prodi ?? '-',
+                $t->nama_tagihan_snapshot,
+                $t->semester,
+                (float) $t->total_harus_bayar,
+                (float) $t->total_sudah_bayar,
+                (float) $t->sisa_tagihan,
+                str_replace('_', ' ', $t->status),
+            ], null, "A{$row}");
+            $row++;
+        }
 
-            fputcsv($out, ['', '', '', '', '', 'TOTAL', '', $totalTagihan, $totalBayar, $totalSisa, '']);
-            fclose($out);
-        }, $filename, ['Content-Type' => 'text/csv']);
+        $sheet->setCellValue("F{$row}", 'TOTAL');
+        $sheet->setCellValue("H{$row}", $totalTagihan);
+        $sheet->setCellValue("I{$row}", $totalBayar);
+        $sheet->setCellValue("J{$row}", $totalSisa);
+        $sheet->getStyle("F{$row}:J{$row}")->getFont()->setBold(true);
+
+        $sheet->getStyle("H2:J{$row}")->getNumberFormat()->setFormatCode('#,##0');
+        foreach (range('A', 'K') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        $sheet->getStyle('A1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $filename = 'Laporan_Keuangan_'.now()->format('Ymd_His').'.xlsx';
+        $tempPath = tempnam(sys_get_temp_dir(), 'xlsx');
+        (new Xlsx($spreadsheet))->save($tempPath);
+
+        return response()->download($tempPath, $filename)->deleteFileAfterSend(true);
     }
 
     public function render()

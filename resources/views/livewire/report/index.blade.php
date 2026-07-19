@@ -4,9 +4,9 @@
             <h2 class="text-2xl font-bold text-gray-900">Laporan Keuangan</h2>
             <p class="text-gray-500">Ekspor data pembayaran dan filter tingkat/semester</p>
         </div>
-        <button wire:click="exportCsv" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-sm flex items-center gap-2 transition">
+        <button wire:click="exportXlsx" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-sm flex items-center gap-2 transition">
             <x-icon name="file-text" class="w-4 h-4" />
-            Export CSV (Excel)
+            Export Excel (.xlsx)
         </button>
     </div>
 

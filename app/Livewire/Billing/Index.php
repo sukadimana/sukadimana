@@ -7,13 +7,24 @@ use App\Enums\StatusTagihan;
 use App\Models\KategoriBeasiswa;
 use App\Models\Mahasiswa;
 use App\Models\MasterBiaya;
+use App\Models\Pembayaran;
 use App\Models\Prodi;
 use App\Models\Tagihan;
 use App\Models\TahunAkademik;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Index extends Component
 {
+    use WithFileUploads;
+
+    public $importFile = null;
+
+    public ?string $importMessage = null;
     public string $activeTab = 'SINGLE';
 
     public string $search = '';
@@ -151,6 +162,108 @@ class Index extends Component
         }
 
         $this->successMessage = "Berhasil membangkitkan {$generated} tagihan baru. ({$skipped} dilewati karena sudah ada atau tidak memenuhi syarat)";
+    }
+
+    public function downloadTagihanTemplate()
+    {
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Tagihan Lama');
+
+        $headers = ['nim', 'nama_biaya', 'semester', 'nominal_awal', 'potongan_beasiswa', 'total_sudah_bayar', 'tanggal_jatuh_tempo'];
+        $sheet->fromArray($headers, null, 'A1');
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('DBEAFE');
+        $sheet->fromArray(['12345678', 'SPP Semester 3', 3, 2000000, 0, 2000000, '2026-06-30'], null, 'A2');
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'xlsx');
+        (new Xlsx($spreadsheet))->save($tempPath);
+
+        return response()->download($tempPath, 'template_import_tagihan_lama.xlsx')->deleteFileAfterSend(true);
+    }
+
+    public function updatedImportFile(): void
+    {
+        $this->validate(['importFile' => 'required|file|mimes:xlsx,xls,csv|max:5120']);
+
+        $spreadsheet = IOFactory::load($this->importFile->getRealPath());
+        $rows = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        $header = array_map(fn ($h) => trim((string) $h), array_shift($rows));
+
+        $activeTa = TahunAkademik::where('is_active', true)->first();
+        $tagihanCount = 0;
+        $paymentCount = 0;
+
+        foreach ($rows as $row) {
+            $data = array_combine($header, $row);
+            $nim = trim((string) ($data['nim'] ?? ''));
+            if ($nim === '') {
+                continue;
+            }
+
+            $student = Mahasiswa::where('nim', $nim)->first();
+            if (! $student) {
+                continue;
+            }
+
+            $namaBiaya = trim((string) ($data['nama_biaya'] ?? 'Tagihan Import'));
+            $semester = (int) ($data['semester'] ?? 1) ?: 1;
+            $nominalAwal = (float) ($data['nominal_awal'] ?? 0);
+            $potongan = (float) ($data['potongan_beasiswa'] ?? 0);
+            $totalHarusBayar = max(0, $nominalAwal - $potongan);
+            $totalSudahBayar = (float) ($data['total_sudah_bayar'] ?? 0);
+            $sisaTagihan = max(0, $totalHarusBayar - $totalSudahBayar);
+            $status = $sisaTagihan == 0 ? StatusTagihan::LUNAS->value : ($totalSudahBayar > 0 ? StatusTagihan::CICILAN->value : StatusTagihan::BELUM_LUNAS->value);
+
+            $masterBiaya = MasterBiaya::firstOrCreate(
+                ['nama_biaya' => $namaBiaya, 'semester' => $semester],
+                ['angkatan' => $student->angkatan, 'nominal_baku' => $nominalAwal, 'bisa_dicicil' => true, 'jenjang' => 'SEMUA']
+            );
+
+            $exists = Tagihan::where('mahasiswa_id', $student->id)
+                ->where('master_biaya_id', $masterBiaya->id)
+                ->exists();
+            if ($exists) {
+                continue;
+            }
+
+            $jatuhTempo = trim((string) ($data['tanggal_jatuh_tempo'] ?? ''));
+
+            $tagihan = Tagihan::create([
+                'mahasiswa_id' => $student->id,
+                'master_biaya_id' => $masterBiaya->id,
+                'nominal_awal' => $nominalAwal,
+                'potongan_beasiswa' => $potongan,
+                'total_harus_bayar' => $totalHarusBayar,
+                'total_sudah_bayar' => $totalSudahBayar,
+                'sisa_tagihan' => $sisaTagihan,
+                'status' => $status,
+                'nama_tagihan_snapshot' => $namaBiaya,
+                'nama_mahasiswa_snapshot' => $student->nama_lengkap,
+                'semester' => $semester,
+                'kategori_snapshot' => $student->kategori_beasiswa,
+                'jatuh_tempo' => $jatuhTempo !== '' ? $jatuhTempo : null,
+                'tahun_akademik_id_snapshot' => $activeTa?->id,
+            ]);
+            $tagihanCount++;
+
+            if ($totalSudahBayar > 0) {
+                Pembayaran::create([
+                    'tagihan_id' => $tagihan->id,
+                    'nomor_transaksi' => 'TRX-MIGRASI-'.$nim.'-'.now()->format('YmdHis').random_int(100, 999),
+                    'tanggal_bayar' => now()->toDateString(),
+                    'jumlah_bayar' => $totalSudahBayar,
+                    'metode_bayar' => 'TUNAI',
+                ]);
+                $paymentCount++;
+            }
+        }
+
+        $this->importFile = null;
+        $this->importMessage = "Berhasil mengimpor {$tagihanCount} tagihan dengan {$paymentCount} data pembayaran terkait.";
     }
 
     public function render()

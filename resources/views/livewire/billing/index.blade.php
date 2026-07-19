@@ -10,16 +10,41 @@
         <p class="text-xs text-gray-400 w-1/4">Akan diterapkan ke semua tagihan yang dibangkitkan.</p>
     </div>
 
-    <div class="flex gap-2 p-1 bg-gray-100 rounded-xl w-fit">
-        <button wire:click="$set('activeTab', 'SINGLE')" class="flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all {{ $activeTab === 'SINGLE' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-            <x-icon name="plus" class="w-4 h-4" />
-            Per Individu
-        </button>
-        <button wire:click="$set('activeTab', 'BATCH')" class="flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all {{ $activeTab === 'BATCH' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-            <x-icon name="users" class="w-4 h-4" />
-            Batch Generate
-        </button>
+    <div class="flex flex-wrap justify-between gap-4">
+        <div class="flex gap-2 p-1 bg-gray-100 rounded-xl w-fit">
+            <button wire:click="$set('activeTab', 'SINGLE')" class="flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all {{ $activeTab === 'SINGLE' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                <x-icon name="plus" class="w-4 h-4" />
+                Per Individu
+            </button>
+            <button wire:click="$set('activeTab', 'BATCH')" class="flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all {{ $activeTab === 'BATCH' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                <x-icon name="users" class="w-4 h-4" />
+                Batch Generate
+            </button>
+        </div>
+
+        <div class="flex gap-2">
+            <button wire:click="downloadTagihanTemplate" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold border border-gray-300 transition-colors flex items-center gap-2">
+                <x-icon name="file-text" class="w-4 h-4" />
+                Template Import Tagihan
+            </button>
+            <label class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold border border-green-700 transition-colors flex items-center gap-2 cursor-pointer">
+                <x-icon name="file-text" class="w-4 h-4" />
+                Import Excel Tagihan
+                <input type="file" wire:model="importFile" accept=".xlsx,.xls,.csv" class="hidden">
+            </label>
+        </div>
     </div>
+
+    <div wire:loading wire:target="importFile" class="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm flex items-center gap-2">
+        <x-icon name="loader" class="w-4 h-4 animate-spin" /> Mengimpor file...
+    </div>
+    @error('importFile') <div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm">{{ $message }}</div> @enderror
+    @if ($importMessage)
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-center justify-between gap-3">
+            <p class="font-medium">{{ $importMessage }}</p>
+            <button wire:click="$set('importMessage', null)" class="text-green-800 font-bold">&times;</button>
+        </div>
+    @endif
 
     @if ($successMessage)
         <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-center gap-3">

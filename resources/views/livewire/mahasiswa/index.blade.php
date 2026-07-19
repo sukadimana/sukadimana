@@ -5,6 +5,15 @@
             <p class="text-gray-500">Kelola status akademik dan profil mahasiswa</p>
         </div>
         <div class="flex flex-col sm:flex-row gap-2">
+            <button wire:click="downloadTemplate" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold border border-gray-300 transition-colors flex items-center gap-2">
+                <x-icon name="file-text" class="w-4 h-4" />
+                Template
+            </button>
+            <label class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold border border-green-700 transition-colors flex items-center gap-2 cursor-pointer">
+                <x-icon name="file-text" class="w-4 h-4" />
+                Import Excel
+                <input type="file" wire:model="importFile" accept=".xlsx,.xls,.csv" class="hidden">
+            </label>
             <button wire:click="openPromoteModal" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-lg font-bold border border-amber-200 transition-colors flex items-center gap-2">
                 <x-icon name="dashboard" class="w-4 h-4" />
                 Proses Kenaikan Semester
@@ -15,6 +24,17 @@
             </button>
         </div>
     </div>
+
+    <div wire:loading wire:target="importFile" class="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm flex items-center gap-2">
+        <x-icon name="loader" class="w-4 h-4 animate-spin" /> Mengimpor file...
+    </div>
+    @error('importFile') <div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm">{{ $message }}</div> @enderror
+    @if ($importMessage)
+        <div class="bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center justify-between">
+            <span>{{ $importMessage }}</span>
+            <button wire:click="$set('importMessage', null)" class="text-green-800 font-bold">&times;</button>
+        </div>
+    @endif
 
     {{-- Filters --}}
     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-4">

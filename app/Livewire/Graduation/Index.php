@@ -13,6 +13,9 @@ use App\Models\Yudisium;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Index extends Component
 {
@@ -223,6 +226,53 @@ class Index extends Component
 
         Http::withHeaders(['Authorization' => $profile->wa_api_key ?? ''])
             ->post($profile->wa_api_url, ['phone' => $hp, 'message' => $this->waMessage($student, $alumni)]);
+    }
+
+    public function exportTracerStudy()
+    {
+        $graduates = Mahasiswa::with('prodi')->where('status_akademik', StatusAkademik::LULUS->value)->get();
+        $alumniByMahasiswa = AlumniTracking::whereIn('mahasiswa_id', $graduates->pluck('id'))->get()->keyBy('mahasiswa_id');
+
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Tracer Study');
+
+        $headers = ['NIM', 'Nama Lengkap', 'Angkatan', 'Tahun Masuk', 'Program Studi', 'Jenjang', 'Tahun Lulus', 'No HP', 'Status Pengisian', 'Status Pekerjaan', 'Kategori Pekerjaan', 'Nama Instansi/Kampus', 'Jurusan Lanjutan', 'Prodi Lanjutan', 'Tanggal Isi'];
+        $sheet->fromArray($headers, null, 'A1');
+        $sheet->getStyle('A1:O1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:O1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('DBEAFE');
+
+        $row = 2;
+        foreach ($graduates as $student) {
+            $alumni = $alumniByMahasiswa->get($student->id);
+            $sheet->fromArray([
+                $student->nim,
+                $student->nama_lengkap,
+                $student->angkatan,
+                $student->tahun_masuk ?: explode('/', $student->angkatan)[0],
+                $student->prodi->nama_prodi ?? $student->prodi_id,
+                $student->jenjang ?: ($student->prodi->jenjang ?? 'S1'),
+                $alumni?->tahun_lulus ?? '-',
+                $alumni?->nomor_hp_terbaru ?? '-',
+                $alumni ? 'Sudah Mengisi' : 'Belum Mengisi',
+                $alumni?->status_pekerjaan ?? '-',
+                $alumni?->kategori_pekerjaan ?? '-',
+                $alumni?->nama_instansi ?? '-',
+                $alumni?->jurusan_lanjutan ?? '-',
+                $alumni?->prodi_lanjutan ?? '-',
+                $alumni?->tanggal_isi?->translatedFormat('j F Y') ?? '-',
+            ], null, "A{$row}");
+            $row++;
+        }
+
+        foreach (range('A', 'O') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'xlsx');
+        (new Xlsx($spreadsheet))->save($tempPath);
+
+        return response()->download($tempPath, 'Hasil_Tracer_Study_'.now()->format('Ymd_His').'.xlsx')->deleteFileAfterSend(true);
     }
 
     public function render()
