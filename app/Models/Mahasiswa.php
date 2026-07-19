@@ -58,4 +58,9 @@ class Mahasiswa extends Model
     {
         return $this->hasMany(AlumniTracking::class);
     }
+
+    public function nilais(): HasMany
+    {
+        return $this->hasMany(Nilai::class);
+    }
 }

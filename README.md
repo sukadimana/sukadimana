@@ -25,19 +25,31 @@ Ini adalah hasil migrasi dari versi awal aplikasi (React/Vite + Firebase mock/lo
 - **Manajemen Prodi** — CRUD program studi.
 - **Manajemen Tahun Akademik** — CRUD + aturan "hanya 1 tahun akademik aktif" + tahun aktif tidak bisa dihapus.
 - **Manajemen Biaya (Master Biaya)** — CRUD katalog tarif per prodi/jenjang/semester.
-- **Manajemen Mahasiswa** — CRUD, filter (nama/NIM/prodi/jenjang/status), proses kenaikan semester massal. (Import/export Excel dari versi asli **belum** diporting — akan ditambahkan pada iterasi berikutnya jika dibutuhkan.)
+- **Manajemen Mahasiswa** — CRUD, filter (nama/NIM/prodi/jenjang/status), proses kenaikan semester massal, import massal dari Excel (`.xlsx`) + download template.
+- **Kategori Beasiswa** — CRUD kategori potongan (penuh/nominal/tanpa potongan).
+- **Manajemen Mata Kuliah, Input Nilai KHS, Cetak KHS** — fitur baru (tidak ada di aplikasi React asli, ditambahkan atas permintaan): katalog mata kuliah per prodi/semester, input nilai huruf (A–E) per mahasiswa/mata kuliah/tahun akademik, dan cetak Kartu Hasil Studi (kop surat, IPS, IPK).
+- **Generate Tagihan (Billing)** — penerbitan tagihan per-individu maupun batch dari Master Biaya, dengan aturan asli (mahasiswa harus aktif & terdaftar di tahun akademik aktif, tidak boleh duplikat, potongan otomatis dari kategori beasiswa), termasuk import tagihan lama dari Excel (`.xlsx`) + download template.
+- **Pusat Pembayaran (Finance)** — pencatatan pembayaran (cicilan/lunas), riwayat pembayaran, cetak kwitansi, hapus tagihan (jika belum ada pembayaran).
+- **Cetak Tanggungan** — surat keterangan tanggungan per mahasiswa dengan watermark LUNAS otomatis.
+- **Laporan Keuangan** — filter multi-kriteria + ekspor **Excel (`.xlsx`)**.
+- **Wisuda & Alumni (Graduation)** — checklist bebas pustaka/keuangan/akademik dengan approval per role, cetak bukti pendaftaran yudisium & surat bebas tanggungan, pengaturan periode pendaftaran, serta tab pelacakan alumni (isi data tracer, export tracer study ke Excel, kirim WhatsApp manual/API).
+- **Profil Kampus** — identitas institusi + upload logo (dipakai sebagai kop surat KHS/kwitansi/yudisium).
+- **Manajemen Pengguna** — CRUD akun staf lintas role + edit profil admin sendiri.
+- **Manajemen Database** — backup (unduh file `.sqlite`), restore (unggah file `.sqlite`), dan reset seluruh data akademik/keuangan (akun pengguna & profil kampus tetap aman), dengan konfirmasi berlapis mengikuti UX aplikasi asli.
 
-Semua modul di atas sudah diuji end-to-end dengan browser (login → create/edit/delete → logout, guard akses).
+Semua modul di atas sudah diuji end-to-end dengan browser (login → create/edit/delete → cetak/print → logout, guard akses per role).
 
-### Belum diporting (menyusul di iterasi berikutnya)
+### Website Kampus & Satgas PPK (fitur baru, tidak ada di aplikasi React asli)
 
-Modul-modul berikut ada di aplikasi React asli tapi belum dipindahkan (skema DB & model sudah siap, tinggal dibangunkan UI Livewire-nya):
+- **CMS admin** (menu "Website Kampus" & "Satgas PPK" di sidebar, khusus role `admin`): kelola Berita, Halaman statis, dan Galeri foto — masing-masing berbasis kolom `channel` (`kampus` / `satgas_ppk`) sehingga satu model data melayani dua situs publik terpisah dari satu panel admin yang sama. Rute admin ada di bawah prefix `/admin/...` supaya tidak bentrok dengan rute publik.
+- **Website Kampus publik** (`/`, `/berita`, `/berita/{slug}`, `/program-studi`, `/galeri`, `/halaman/{slug}`, `/kontak`) — tidak perlu login, menampilkan berita terbaru, program studi, galeri, halaman statis (mis. Profil), dan formulir kontak yang masuk ke inbox "Pesan Kontak" di admin.
+- **Satgas PPK microsite** (`/satgas-ppk`, `/satgas-ppk/berita`, `/satgas-ppk/galeri`, `/satgas-ppk/halaman/{slug}`, `/satgas-ppk/pengaduan`) — situs terpisah dengan branding & layout sendiri (`layouts/satgas.blade.php`) sesuai amanat Permendikbudristek No. 30/2021, termasuk **formulir pengaduan** (bisa anonim) yang menghasilkan kode referensi dan masuk ke inbox pengaduan admin (menu "Pengaduan Masuk") untuk ditindaklanjuti (status Baru/Diproses/Selesai + catatan internal). Identitas & kontak Satgas PPK diatur lewat menu "Pengaturan Satgas PPK", tetap dalam satu panel admin yang sama dengan pengaturan kampus.
 
-- Generate Tagihan & Pusat Pembayaran (`BillingModule`, `FinanceModule`)
-- Cetak Tanggungan & Laporan Keuangan (`CetakTanggunganModule`, `ReportModule`)
-- Wisuda & Alumni / Yudisium & Tracer Study (`GraduationModule`, `TracerStudyModule`)
-- Profil Kampus, Manajemen Pengguna, Kategori Beasiswa, Manajemen Database (`CampusProfileModule`, `UserManagementModule`, `KategoriBeasiswaModule`, `DatabaseModule`)
-- Landing page publik
+### Catatan penyesuaian dari versi asli
+
+- **Import/Export Excel** (`.xlsx`) menggunakan `phpoffice/phpspreadsheet` (bukan `maatwebsite/excel`, agar tidak terikat versi Laravel tertentu) — dipakai di Mahasiswa (import + template), Billing (import tagihan lama + template), Laporan Keuangan (ekspor), dan Tracer Study (ekspor). Semua sudah diuji end-to-end (download template, import, dan buka kembali hasil ekspor untuk verifikasi data).
+- **Manajemen Database**: karena versi Laravel ini memakai database relasional sungguhan (bukan `localStorage`), backup/restore berbasis file JSON pada versi React diganti dengan backup/restore file `.sqlite` utuh (lebih aman secara integritas data & foreign key) — hanya berfungsi saat `DB_CONNECTION=sqlite`. Untuk MySQL di hosting, gunakan `mysqldump`/fitur backup panel hosting.
+- **Pengisian Tracer Study mandiri oleh alumni** (tanpa login) belum diporting — saat ini pengisian data tracer dilakukan oleh admin/akademik dari dalam sistem. Landing page publik kampus sendiri sudah tersedia (lihat bagian Website Kampus & Satgas PPK di atas).
 
 ## Menjalankan Secara Lokal
 
@@ -49,6 +61,7 @@ npm install && npm run build
 cp .env.example .env   # lalu sesuaikan DB_* jika perlu
 php artisan key:generate
 php artisan migrate --seed
+php artisan storage:link   # wajib untuk upload gambar berita/galeri/logo Satgas PPK
 php artisan serve
 ```
 

@@ -5,8 +5,17 @@
             <p class="text-gray-500">Kelola status akademik dan profil mahasiswa</p>
         </div>
         <div class="flex flex-col sm:flex-row gap-2">
+            <button wire:click="downloadTemplate" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold border border-gray-300 transition-colors flex items-center gap-2">
+                <x-icon name="file-text" class="w-4 h-4" />
+                Template
+            </button>
+            <label class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold border border-green-700 transition-colors flex items-center gap-2 cursor-pointer">
+                <x-icon name="file-text" class="w-4 h-4" />
+                Import Excel
+                <input type="file" wire:model="importFile" accept=".xlsx,.xls,.csv" class="hidden">
+            </label>
             <button wire:click="openPromoteModal" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-lg font-bold border border-amber-200 transition-colors flex items-center gap-2">
-                <x-icon name="dashboard" class="w-4.5 h-4.5" />
+                <x-icon name="dashboard" class="w-4 h-4" />
                 Proses Kenaikan Semester
             </button>
             <button wire:click="openAddModal" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2">
@@ -15,6 +24,17 @@
             </button>
         </div>
     </div>
+
+    <div wire:loading wire:target="importFile" class="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm flex items-center gap-2">
+        <x-icon name="loader" class="w-4 h-4 animate-spin" /> Mengimpor file...
+    </div>
+    @error('importFile') <div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm">{{ $message }}</div> @enderror
+    @if ($importMessage)
+        <div class="bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center justify-between">
+            <span>{{ $importMessage }}</span>
+            <button wire:click="$set('importMessage', null)" class="text-green-800 font-bold">&times;</button>
+        </div>
+    @endif
 
     {{-- Filters --}}
     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-4">
@@ -107,10 +127,10 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-1">
                                     <button wire:click="edit({{ $student->id }})" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded-lg transition-colors" title="Edit">
-                                        <x-icon name="pencil" class="w-4.5 h-4.5" />
+                                        <x-icon name="pencil" class="w-4 h-4" />
                                     </button>
                                     <button wire:click="confirmDelete({{ $student->id }}, '{{ addslashes($student->nama_lengkap) }}')" class="text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-colors" title="Hapus">
-                                        <x-icon name="trash" class="w-4.5 h-4.5" />
+                                        <x-icon name="trash" class="w-4 h-4" />
                                     </button>
                                 </div>
                             </td>
@@ -293,7 +313,7 @@
                                 @forelse ($activeStudentsForPromotion as $student)
                                     <tr class="hover:bg-gray-50 transition-colors">
                                         <td class="px-4 py-3 w-10 text-center">
-                                            <input type="checkbox" wire:model="selectedForPromotion" value="{{ $student->id }}" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                                            <input type="checkbox" wire:model.live="selectedForPromotion" value="{{ $student->id }}" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="font-bold text-gray-900">{{ $student->nama_lengkap }}</div>

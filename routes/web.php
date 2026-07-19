@@ -4,15 +4,59 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\ResetPassword;
+use App\Livewire\Billing\Index as BillingIndex;
+use App\Livewire\CampusProfile\Index as CampusProfileIndex;
+use App\Livewire\CetakTanggungan\Index as CetakTanggunganIndex;
+use App\Livewire\ContactMessages\Index as ContactMessagesIndex;
+use App\Livewire\Content\Galleries as ContentGalleries;
+use App\Livewire\Content\Pages as ContentPages;
+use App\Livewire\Content\Posts as ContentPosts;
 use App\Livewire\Dashboard\Index as DashboardIndex;
+use App\Livewire\DatabaseManagement\Index as DatabaseManagementIndex;
+use App\Livewire\Finance\Index as FinanceIndex;
+use App\Livewire\Graduation\Index as GraduationIndex;
+use App\Livewire\KategoriBeasiswa\Index as KategoriBeasiswaIndex;
+use App\Livewire\Khs\Cetak as KhsCetak;
 use App\Livewire\Mahasiswa\Index as MahasiswaIndex;
 use App\Livewire\MasterBiaya\Index as MasterBiayaIndex;
+use App\Livewire\MataKuliah\Index as MataKuliahIndex;
+use App\Livewire\Nilai\Index as NilaiIndex;
 use App\Livewire\Prodi\Index as ProdiIndex;
+use App\Livewire\Public\Berita\Index as PublicBeritaIndex;
+use App\Livewire\Public\Berita\Show as PublicBeritaShow;
+use App\Livewire\Public\Galeri\Index as PublicGaleriIndex;
+use App\Livewire\Public\Halaman\Show as PublicHalamanShow;
+use App\Livewire\Public\Home as PublicHome;
+use App\Livewire\Public\Kontak\Index as PublicKontakIndex;
+use App\Livewire\Public\ProgramStudi\Index as PublicProgramStudiIndex;
+use App\Livewire\Report\Index as ReportIndex;
+use App\Livewire\Satgas\Public\Berita\Index as SatgasPublicBeritaIndex;
+use App\Livewire\Satgas\Public\Berita\Show as SatgasPublicBeritaShow;
+use App\Livewire\Satgas\Public\Galeri\Index as SatgasPublicGaleriIndex;
+use App\Livewire\Satgas\Public\Halaman\Show as SatgasPublicHalamanShow;
+use App\Livewire\Satgas\Public\Home as SatgasPublicHome;
+use App\Livewire\Satgas\Public\Pengaduan\Index as SatgasPublicPengaduanIndex;
+use App\Livewire\Satgas\Reports as SatgasReports;
+use App\Livewire\Satgas\Settings as SatgasSettings;
 use App\Livewire\TahunAkademik\Index as TahunAkademikIndex;
+use App\Livewire\UserManagement\Index as UserManagementIndex;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route(auth()->check() ? 'dashboard' : 'login');
+Route::get('/', PublicHome::class)->name('public.home');
+Route::get('/berita', PublicBeritaIndex::class)->name('public.berita.index');
+Route::get('/berita/{slug}', PublicBeritaShow::class)->name('public.berita.show');
+Route::get('/galeri', PublicGaleriIndex::class)->name('public.galeri');
+Route::get('/program-studi', PublicProgramStudiIndex::class)->name('public.program-studi');
+Route::get('/kontak', PublicKontakIndex::class)->name('public.kontak');
+Route::get('/halaman/{slug}', PublicHalamanShow::class)->name('public.halaman');
+
+Route::prefix('satgas-ppk')->name('satgas.public.')->group(function () {
+    Route::get('/', SatgasPublicHome::class)->name('home');
+    Route::get('/berita', SatgasPublicBeritaIndex::class)->name('berita.index');
+    Route::get('/berita/{slug}', SatgasPublicBeritaShow::class)->name('berita.show');
+    Route::get('/galeri', SatgasPublicGaleriIndex::class)->name('galeri');
+    Route::get('/halaman/{slug}', SatgasPublicHalamanShow::class)->name('halaman');
+    Route::get('/pengaduan', SatgasPublicPengaduanIndex::class)->name('pengaduan');
 });
 
 Route::middleware('guest')->group(function () {
@@ -31,5 +75,34 @@ Route::middleware('auth')->group(function () {
         Route::get('/prodi', ProdiIndex::class)->name('prodi.index');
         Route::get('/tahun-akademik', TahunAkademikIndex::class)->name('tahun-akademik.index');
         Route::get('/master-biaya', MasterBiayaIndex::class)->name('master-biaya.index');
+        Route::get('/mata-kuliah', MataKuliahIndex::class)->name('mata-kuliah.index');
+        Route::get('/nilai', NilaiIndex::class)->name('nilai.index');
+        Route::get('/khs/cetak', KhsCetak::class)->name('khs.cetak');
+    });
+
+    Route::middleware('role:admin,keuangan')->group(function () {
+        Route::get('/billing', BillingIndex::class)->name('billing.index');
+        Route::get('/finance', FinanceIndex::class)->name('finance.index');
+        Route::get('/cetak-tanggungan', CetakTanggunganIndex::class)->name('cetak-tanggungan.index');
+        Route::get('/report', ReportIndex::class)->name('report.index');
+    });
+
+    Route::middleware('role:admin,akademik,petugas_yudisium,perpus,keuangan')->group(function () {
+        Route::get('/graduation', GraduationIndex::class)->name('graduation.index');
+    });
+
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/kategori-beasiswa', KategoriBeasiswaIndex::class)->name('kategori-beasiswa.index');
+        Route::get('/campus-profile', CampusProfileIndex::class)->name('campus-profile.index');
+        Route::get('/user-management', UserManagementIndex::class)->name('user-management.index');
+        Route::get('/database-management', DatabaseManagementIndex::class)->name('database-management.index');
+
+        Route::get('/admin/website/{channel}/berita', ContentPosts::class)->whereIn('channel', ['kampus', 'satgas_ppk'])->name('content.posts');
+        Route::get('/admin/website/{channel}/halaman', ContentPages::class)->whereIn('channel', ['kampus', 'satgas_ppk'])->name('content.pages');
+        Route::get('/admin/website/{channel}/galeri', ContentGalleries::class)->whereIn('channel', ['kampus', 'satgas_ppk'])->name('content.galleries');
+        Route::get('/admin/website/pesan-kontak', ContactMessagesIndex::class)->name('contact-messages.index');
+
+        Route::get('/admin/satgas-ppk/pengaduan', SatgasReports::class)->name('satgas.reports');
+        Route::get('/admin/satgas-ppk/pengaturan', SatgasSettings::class)->name('satgas.settings');
     });
 });

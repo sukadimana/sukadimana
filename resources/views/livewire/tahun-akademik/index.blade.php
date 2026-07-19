@@ -49,10 +49,10 @@
                                 <td class="p-4">
                                     <div class="flex items-center justify-center gap-2">
                                         <button wire:click="openEditModal({{ $ta->id }})" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                            <x-icon name="pencil" class="w-4.5 h-4.5" />
+                                            <x-icon name="pencil" class="w-4 h-4" />
                                         </button>
                                         <button wire:click="delete({{ $ta->id }})" wire:confirm="Apakah Anda yakin ingin menghapus Tahun Akademik ini?" @disabled($ta->is_active) class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                                            <x-icon name="trash" class="w-4.5 h-4.5" />
+                                            <x-icon name="trash" class="w-4 h-4" />
                                         </button>
                                     </div>
                                 </td>

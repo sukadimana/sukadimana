@@ -11,11 +11,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Index extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
+
+    public $importFile = null;
+
+    public ?string $importMessage = null;
 
     public string $search = '';
 
@@ -212,6 +221,69 @@ class Index extends Component
 
         $this->isPromoteModalOpen = false;
         $this->selectedForPromotion = [];
+    }
+
+    public function downloadTemplate()
+    {
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Mahasiswa');
+
+        $headers = ['nim', 'nama_lengkap', 'angkatan', 'tahun_masuk', 'status_akademik', 'kategori_beasiswa', 'jenjang', 'semester_saat_ini', 'jenis_kelamin', 'prodi_id'];
+        $sheet->fromArray($headers, null, 'A1');
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('DBEAFE');
+        $sheet->fromArray(['12345678', 'John Doe', '2023/2024', '2023', 'AKTIF', 'NONE', 'S1', '1', 'L', Prodi::first()?->id ?? 'ID_PRODI_DISINI'], null, 'A2');
+        foreach (range('A', 'J') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'xlsx');
+        (new Xlsx($spreadsheet))->save($tempPath);
+
+        return response()->download($tempPath, 'template_import_mahasiswa.xlsx')->deleteFileAfterSend(true);
+    }
+
+    public function updatedImportFile(): void
+    {
+        $this->validate(['importFile' => 'required|file|mimes:xlsx,xls,csv|max:5120']);
+
+        $spreadsheet = IOFactory::load($this->importFile->getRealPath());
+        $rows = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+
+        $header = array_map(fn ($h) => trim((string) $h), array_shift($rows));
+        $activeTahunAkademik = TahunAkademik::where('is_active', true)->first();
+
+        $successCount = 0;
+        foreach ($rows as $row) {
+            $data = array_combine($header, $row);
+            $nim = trim((string) ($data['nim'] ?? ''));
+            $namaLengkap = trim((string) ($data['nama_lengkap'] ?? ''));
+            $prodiId = trim((string) ($data['prodi_id'] ?? ''));
+
+            if ($nim === '' || $namaLengkap === '' || $prodiId === '' || Mahasiswa::where('nim', $nim)->exists() || ! Prodi::whereKey($prodiId)->exists()) {
+                continue;
+            }
+
+            Mahasiswa::create([
+                'user_id' => 'USR-'.random_int(1000, 10999),
+                'nim' => $nim,
+                'nama_lengkap' => $namaLengkap,
+                'angkatan' => trim((string) ($data['angkatan'] ?? now()->year)) ?: (string) now()->year,
+                'tahun_masuk' => trim((string) ($data['tahun_masuk'] ?? '')) ?: (string) now()->year,
+                'status_akademik' => trim((string) ($data['status_akademik'] ?? 'AKTIF')) ?: 'AKTIF',
+                'kategori_beasiswa' => trim((string) ($data['kategori_beasiswa'] ?? 'NONE')) ?: 'NONE',
+                'jenjang' => trim((string) ($data['jenjang'] ?? 'S1')) ?: 'S1',
+                'semester_saat_ini' => (int) ($data['semester_saat_ini'] ?? 1) ?: 1,
+                'jenis_kelamin' => trim((string) ($data['jenis_kelamin'] ?? '')) ?: null,
+                'prodi_id' => $prodiId,
+                'tahun_akademik_id_saat_ini' => $activeTahunAkademik?->id,
+            ]);
+            $successCount++;
+        }
+
+        $this->importFile = null;
+        $this->importMessage = "Berhasil mengimpor {$successCount} data mahasiswa.";
     }
 
     protected function filteredQuery()

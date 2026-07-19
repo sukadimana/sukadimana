@@ -41,17 +41,56 @@
                     </div>
 
                     @auth
+                        @if (auth()->user()->hasRole('admin', 'akademik'))
+                        <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Akademik & KHS</p>
+                            @include('layouts.partials.nav-item', ['route' => 'mata-kuliah.index', 'icon' => 'book-open', 'label' => 'Manajemen Mata Kuliah'])
+                            @include('layouts.partials.nav-item', ['route' => 'nilai.index', 'icon' => 'file-text', 'label' => 'Input Nilai KHS'])
+                            @include('layouts.partials.nav-item', ['route' => 'khs.cetak', 'icon' => 'printer', 'label' => 'Cetak KHS'])
+                        </div>
+                        @endif
+
                         @if (auth()->user()->hasRole('admin', 'keuangan'))
                         <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Keuangan</p>
-                            <p class="px-4 py-3 text-sm text-gray-400 italic">Segera hadir</p>
+                            @include('layouts.partials.nav-item', ['route' => 'billing.index', 'icon' => 'file-text', 'label' => 'Generate Tagihan'])
+                            @include('layouts.partials.nav-item', ['route' => 'finance.index', 'icon' => 'credit-card', 'label' => 'Pusat Pembayaran'])
+                            @include('layouts.partials.nav-item', ['route' => 'cetak-tanggungan.index', 'icon' => 'printer', 'label' => 'Cetak Tanggungan'])
+                            @include('layouts.partials.nav-item', ['route' => 'report.index', 'icon' => 'file-text', 'label' => 'Laporan Keuangan'])
+                        </div>
+                        @endif
+
+                        @if (auth()->user()->hasRole('admin', 'akademik', 'petugas_yudisium', 'perpus', 'keuangan'))
+                        <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Kelulusan Akademik</p>
+                            @include('layouts.partials.nav-item', ['route' => 'graduation.index', 'icon' => 'graduation-cap', 'label' => 'Wisuda & Alumni'])
                         </div>
                         @endif
 
                         @if (auth()->user()->hasRole('admin'))
                         <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Website Kampus</p>
+                            @include('layouts.partials.nav-item', ['route' => 'content.posts', 'params' => ['channel' => 'kampus'], 'icon' => 'globe', 'label' => 'Berita & Pengumuman'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.pages', 'params' => ['channel' => 'kampus'], 'icon' => 'file-text', 'label' => 'Halaman Statis'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.galleries', 'params' => ['channel' => 'kampus'], 'icon' => 'image', 'label' => 'Galeri Foto'])
+                            @include('layouts.partials.nav-item', ['route' => 'contact-messages.index', 'icon' => 'mail', 'label' => 'Pesan Kontak'])
+                        </div>
+
+                        <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Satgas PPK</p>
+                            @include('layouts.partials.nav-item', ['route' => 'satgas.reports', 'icon' => 'shield', 'label' => 'Pengaduan Masuk'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.posts', 'params' => ['channel' => 'satgas_ppk'], 'icon' => 'globe', 'label' => 'Berita Satgas PPK'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.pages', 'params' => ['channel' => 'satgas_ppk'], 'icon' => 'file-text', 'label' => 'Halaman Satgas PPK'])
+                            @include('layouts.partials.nav-item', ['route' => 'content.galleries', 'params' => ['channel' => 'satgas_ppk'], 'icon' => 'image', 'label' => 'Galeri Satgas PPK'])
+                            @include('layouts.partials.nav-item', ['route' => 'satgas.settings', 'icon' => 'shield', 'label' => 'Pengaturan Satgas PPK'])
+                        </div>
+
+                        <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Pengaturan</p>
-                            <p class="px-4 py-3 text-sm text-gray-400 italic">Segera hadir</p>
+                            @include('layouts.partials.nav-item', ['route' => 'campus-profile.index', 'icon' => 'building', 'label' => 'Profil Kampus'])
+                            @include('layouts.partials.nav-item', ['route' => 'user-management.index', 'icon' => 'shield', 'label' => 'Manajemen Pengguna'])
+                            @include('layouts.partials.nav-item', ['route' => 'kategori-beasiswa.index', 'icon' => 'shield', 'label' => 'Kategori Beasiswa'])
+                            @include('layouts.partials.nav-item', ['route' => 'database-management.index', 'icon' => 'database', 'label' => 'Manajemen Database'])
                         </div>
                         @endif
                     @endauth
