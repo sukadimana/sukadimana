@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Models\MataKuliah;
+use App\Models\Page;
+use App\Models\Post;
 use App\Models\Prodi;
 use App\Models\ProfilKampus;
 use App\Models\TahunAkademik;
@@ -31,6 +33,10 @@ class DatabaseSeeder extends Seeder
             'alamat_kampus' => 'Sistem Informasi Akademik Terpadu - Kampus Digital',
             'telepon' => '-',
             'email' => 'admin@kampus.edu',
+            'satgas_nama' => 'Satgas PPKS SIAKAD Pro',
+            'satgas_deskripsi' => 'Satuan Tugas Pencegahan dan Penanganan Kekerasan Seksual di lingkungan kampus, sesuai Permendikbudristek No. 30 Tahun 2021.',
+            'satgas_email' => 'satgas-ppks@kampus.edu',
+            'satgas_telepon' => '-',
         ]);
 
         $mpi = Prodi::firstOrCreate(
@@ -63,5 +69,37 @@ class DatabaseSeeder extends Seeder
                 ['nama_mk' => $mk['nama_mk'], 'sks' => $mk['sks'], 'prodi_id' => $mpi->id, 'semester' => $mk['semester']]
             );
         }
+
+        Post::firstOrCreate(
+            ['channel' => 'kampus', 'slug' => 'selamat-datang-di-website-kampus'],
+            [
+                'title' => 'Selamat Datang di Website Kampus',
+                'excerpt' => 'Website resmi kampus kini hadir untuk menyampaikan berita, kegiatan, dan informasi akademik.',
+                'content' => 'Website ini menjadi kanal resmi kampus untuk berbagi berita, pengumuman, dan galeri kegiatan kepada masyarakat luas.',
+                'is_published' => true,
+                'published_at' => now(),
+            ]
+        );
+
+        Page::firstOrCreate(
+            ['channel' => 'kampus', 'slug' => 'profil-kampus'],
+            [
+                'title' => 'Profil Kampus',
+                'content' => 'Kampus kami berkomitmen mencetak generasi unggul melalui pendidikan yang berkualitas dan berkarakter.',
+                'is_published' => true,
+                'menu_order' => 1,
+            ]
+        );
+
+        Post::firstOrCreate(
+            ['channel' => 'satgas_ppk', 'slug' => 'mengenal-satgas-ppks'],
+            [
+                'title' => 'Mengenal Satgas PPKS',
+                'excerpt' => 'Satgas PPKS hadir sebagai unit penanganan kekerasan seksual di lingkungan kampus.',
+                'content' => 'Satgas PPKS bertugas melakukan pencegahan, penanganan, dan pendampingan bagi korban kekerasan seksual di lingkungan kampus sesuai Permendikbudristek No. 30 Tahun 2021.',
+                'is_published' => true,
+                'published_at' => now(),
+            ]
+        );
     }
 }
