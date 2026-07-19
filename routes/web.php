@@ -6,7 +6,9 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Auth\ResetPassword;
 use App\Livewire\Billing\Index as BillingIndex;
 use App\Livewire\CampusProfile\Index as CampusProfileIndex;
+use App\Livewire\CetakTanggungan\Index as CetakTanggunganIndex;
 use App\Livewire\Dashboard\Index as DashboardIndex;
+use App\Livewire\DatabaseManagement\Index as DatabaseManagementIndex;
 use App\Livewire\Finance\Index as FinanceIndex;
 use App\Livewire\Graduation\Index as GraduationIndex;
 use App\Livewire\KategoriBeasiswa\Index as KategoriBeasiswaIndex;
@@ -16,6 +18,7 @@ use App\Livewire\MasterBiaya\Index as MasterBiayaIndex;
 use App\Livewire\MataKuliah\Index as MataKuliahIndex;
 use App\Livewire\Nilai\Index as NilaiIndex;
 use App\Livewire\Prodi\Index as ProdiIndex;
+use App\Livewire\Report\Index as ReportIndex;
 use App\Livewire\TahunAkademik\Index as TahunAkademikIndex;
 use App\Livewire\UserManagement\Index as UserManagementIndex;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin,keuangan')->group(function () {
         Route::get('/billing', BillingIndex::class)->name('billing.index');
         Route::get('/finance', FinanceIndex::class)->name('finance.index');
+        Route::get('/cetak-tanggungan', CetakTanggunganIndex::class)->name('cetak-tanggungan.index');
+        Route::get('/report', ReportIndex::class)->name('report.index');
     });
 
     Route::middleware('role:admin,akademik,petugas_yudisium,perpus,keuangan')->group(function () {
@@ -58,5 +63,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/kategori-beasiswa', KategoriBeasiswaIndex::class)->name('kategori-beasiswa.index');
         Route::get('/campus-profile', CampusProfileIndex::class)->name('campus-profile.index');
         Route::get('/user-management', UserManagementIndex::class)->name('user-management.index');
+        Route::get('/database-management', DatabaseManagementIndex::class)->name('database-management.index');
     });
 });

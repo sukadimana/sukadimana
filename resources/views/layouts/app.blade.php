@@ -55,6 +55,8 @@
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Keuangan</p>
                             @include('layouts.partials.nav-item', ['route' => 'billing.index', 'icon' => 'file-text', 'label' => 'Generate Tagihan'])
                             @include('layouts.partials.nav-item', ['route' => 'finance.index', 'icon' => 'credit-card', 'label' => 'Pusat Pembayaran'])
+                            @include('layouts.partials.nav-item', ['route' => 'cetak-tanggungan.index', 'icon' => 'printer', 'label' => 'Cetak Tanggungan'])
+                            @include('layouts.partials.nav-item', ['route' => 'report.index', 'icon' => 'file-text', 'label' => 'Laporan Keuangan'])
                         </div>
                         @endif
 
@@ -71,6 +73,7 @@
                             @include('layouts.partials.nav-item', ['route' => 'campus-profile.index', 'icon' => 'building', 'label' => 'Profil Kampus'])
                             @include('layouts.partials.nav-item', ['route' => 'user-management.index', 'icon' => 'shield', 'label' => 'Manajemen Pengguna'])
                             @include('layouts.partials.nav-item', ['route' => 'kategori-beasiswa.index', 'icon' => 'shield', 'label' => 'Kategori Beasiswa'])
+                            @include('layouts.partials.nav-item', ['route' => 'database-management.index', 'icon' => 'database', 'label' => 'Manajemen Database'])
                         </div>
                         @endif
                     @endauth
