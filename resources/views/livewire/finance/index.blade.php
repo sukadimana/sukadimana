@@ -10,7 +10,7 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="relative flex-1">
-                        <x-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4.5 h-4.5" />
+                        <x-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari NIM atau Nama Mahasiswa..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm">
                     </div>
                     <div class="flex gap-2">
@@ -149,7 +149,7 @@
 
                     @if ($selectedTagihan->sisa_tagihan > 0)
                         <button wire:click="openPaymentModal" class="w-full mt-6 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100 flex items-center justify-center gap-2 active:scale-95">
-                            <x-icon name="credit-card" class="w-4.5 h-4.5" />
+                            <x-icon name="credit-card" class="w-4 h-4" />
                             Catat Pembayaran Baru
                         </button>
                     @endif
@@ -291,7 +291,7 @@
 
                 <div class="p-4 bg-gray-50 flex gap-3 print:hidden">
                     <button onclick="window.print()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition">
-                        <x-icon name="printer" class="w-4.5 h-4.5" />
+                        <x-icon name="printer" class="w-4 h-4" />
                         Cetak Sekarang
                     </button>
                     <button wire:click="$set('showReceiptId', null)" class="px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-50 transition">

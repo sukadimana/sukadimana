@@ -41,10 +41,10 @@
                             <td class="p-4">
                                 <div class="flex items-center justify-center gap-2">
                                     <button wire:click="edit({{ $mk->id }})" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                        <x-icon name="pencil" class="w-4.5 h-4.5" />
+                                        <x-icon name="pencil" class="w-4 h-4" />
                                     </button>
                                     <button wire:click="delete({{ $mk->id }})" wire:confirm="Hapus mata kuliah ini? Nilai yang sudah diinput untuk mata kuliah ini juga akan terhapus." class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                        <x-icon name="trash" class="w-4.5 h-4.5" />
+                                        <x-icon name="trash" class="w-4 h-4" />
                                     </button>
                                 </div>
                             </td>

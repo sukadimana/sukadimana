@@ -12,11 +12,11 @@
 
     <div class="flex gap-2 p-1 bg-gray-100 rounded-xl w-fit">
         <button wire:click="$set('activeTab', 'SINGLE')" class="flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all {{ $activeTab === 'SINGLE' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-            <x-icon name="plus" class="w-4.5 h-4.5" />
+            <x-icon name="plus" class="w-4 h-4" />
             Per Individu
         </button>
         <button wire:click="$set('activeTab', 'BATCH')" class="flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all {{ $activeTab === 'BATCH' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-            <x-icon name="users" class="w-4.5 h-4.5" />
+            <x-icon name="users" class="w-4 h-4" />
             Batch Generate
         </button>
     </div>

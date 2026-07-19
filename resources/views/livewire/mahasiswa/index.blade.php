@@ -6,7 +6,7 @@
         </div>
         <div class="flex flex-col sm:flex-row gap-2">
             <button wire:click="openPromoteModal" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-lg font-bold border border-amber-200 transition-colors flex items-center gap-2">
-                <x-icon name="dashboard" class="w-4.5 h-4.5" />
+                <x-icon name="dashboard" class="w-4 h-4" />
                 Proses Kenaikan Semester
             </button>
             <button wire:click="openAddModal" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2">
@@ -107,10 +107,10 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-1">
                                     <button wire:click="edit({{ $student->id }})" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded-lg transition-colors" title="Edit">
-                                        <x-icon name="pencil" class="w-4.5 h-4.5" />
+                                        <x-icon name="pencil" class="w-4 h-4" />
                                     </button>
                                     <button wire:click="confirmDelete({{ $student->id }}, '{{ addslashes($student->nama_lengkap) }}')" class="text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-colors" title="Hapus">
-                                        <x-icon name="trash" class="w-4.5 h-4.5" />
+                                        <x-icon name="trash" class="w-4 h-4" />
                                     </button>
                                 </div>
                             </td>

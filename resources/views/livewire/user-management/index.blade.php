@@ -80,9 +80,9 @@
                                 <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">{{ $u->role->label() }}</span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <button wire:click="edit({{ $u->id }})" class="text-blue-600 hover:text-blue-800 p-1 mx-1"><x-icon name="pencil" class="w-4.5 h-4.5" /></button>
+                                <button wire:click="edit({{ $u->id }})" class="text-blue-600 hover:text-blue-800 p-1 mx-1"><x-icon name="pencil" class="w-4 h-4" /></button>
                                 @if ($u->id !== auth()->id())
-                                    <button wire:click="confirmDelete({{ $u->id }})" class="text-red-600 hover:text-red-800 p-1 mx-1"><x-icon name="trash" class="w-4.5 h-4.5" /></button>
+                                    <button wire:click="confirmDelete({{ $u->id }})" class="text-red-600 hover:text-red-800 p-1 mx-1"><x-icon name="trash" class="w-4 h-4" /></button>
                                 @endif
                             </td>
                         </tr>

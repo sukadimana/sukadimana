@@ -58,6 +58,13 @@
                         </div>
                         @endif
 
+                        @if (auth()->user()->hasRole('admin', 'akademik', 'petugas_yudisium', 'perpus', 'keuangan'))
+                        <div class="mb-6">
+                            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Kelulusan Akademik</p>
+                            @include('layouts.partials.nav-item', ['route' => 'graduation.index', 'icon' => 'graduation-cap', 'label' => 'Wisuda & Alumni'])
+                        </div>
+                        @endif
+
                         @if (auth()->user()->hasRole('admin'))
                         <div class="mb-6">
                             <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Pengaturan</p>

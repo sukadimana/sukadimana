@@ -55,10 +55,10 @@
                 @if ($isAdmin)
                     <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-end gap-2">
                         <button wire:click="edit({{ $biaya->id }})" class="text-blue-600 hover:bg-blue-100 p-2 rounded-lg transition-colors" title="Edit">
-                            <x-icon name="pencil" class="w-4.5 h-4.5" />
+                            <x-icon name="pencil" class="w-4 h-4" />
                         </button>
                         <button wire:click="confirmDelete({{ $biaya->id }}, '{{ addslashes($biaya->nama_biaya) }}')" class="text-red-600 hover:bg-red-100 p-2 rounded-lg transition-colors" title="Hapus">
-                            <x-icon name="trash" class="w-4.5 h-4.5" />
+                            <x-icon name="trash" class="w-4 h-4" />
                         </button>
                     </div>
                 @endif
